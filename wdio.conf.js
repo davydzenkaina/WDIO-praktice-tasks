@@ -1,4 +1,7 @@
-exports.config = {
+const yargs = require('yargs')
+const params = yargs.argv
+
+ exports.config = {    
     //
     // ====================
     // Runner Configuration
@@ -21,8 +24,18 @@ exports.config = {
     // will be called from there.
     //
     specs: [
-        './test/specs/practice-task3.js'
+        './test/specs/practice-task1.js'
     ],
+    suites:{
+        smoke:[
+      './test/specs/practice-task4.js'
+        ],
+
+      regression:[
+          './test/specs/*.js',
+        ]
+  },
+
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -56,7 +69,7 @@ exports.config = {
         // 5 instances get started at a time.
         maxInstances: 5,
         //
-        browserName: 'chrome',
+        browserName: `${params.browser}`,
         acceptInsecureCerts: true
         // If outputDir is provided WebdriverIO can capture driver session logs
         // it is possible to configure which logTypes to include/exclude.
@@ -195,7 +208,7 @@ exports.config = {
      * @param {Array.<String>} specs        List of spec file paths that are to be run
      * @param {Object}         browser      instance of created browser/device session
      */
-     before: function (capabilities, specs) {
+     before: function (capabilities, specs, browser) {
        browser.setWindowSize(1920, 1080);
     },
     /**
@@ -238,9 +251,13 @@ exports.config = {
      * @param {Boolean} result.passed    true if test has passed, otherwise false
      * @param {Object}  result.retries   informations to spec related retries, e.g. `{ attempts: 0, limit: 0 }`
      */
-    // afterTest: function(test, context, { error, result, duration, passed, retries }) {
-    // },
-
+     afterTest: function(test, context, { error, result, passed,duration, retries }) {
+        if(error){
+        let date = new Date('Febriry 3 , 2023 15:45')
+ let necessaryDateFormat = date.toLocaleDateString(1) + '_' + date.toLocaleTimeString().replace(/:/g,"_")
+         browser.saveScreenshot(`./report/${necessaryDateFormat}.png`)
+        }
+     },
 
     /**
      * Hook that gets executed after the suite has ended
